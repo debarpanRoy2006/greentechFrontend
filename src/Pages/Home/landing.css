@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@700&display=swap');
+
+/* --- 🌍 SCENE SETUP --- */
+.home-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  /* THE GOLDEN HOUR GRADIENT */
+  background: linear-gradient(to bottom, 
+    #2b1055 0%,   /* Deep Purple Space */
+    #7597de 40%,  /* Soft Blue Sky */
+    #fea49f 70%,  /* Pinkish Sunset */
+    #ffcc00 100%  /* Golden Horizon */
+  );
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* --- 🖼️ BACKGROUND LAYERS --- */
+.background-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: cover;
+}
+
+.clouds-bg {
+  z-index: 1;
+  opacity: 0.9;
+  background-size: auto 70%; 
+  mix-blend-mode: hard-light; /* Blends clouds into the sunset colors */
+}
+
+/* CSS-drawn distant mountains for depth */
+/* --- ⛰️ MOUNTAIN LAYER (The Bridge) --- */
+/* Making this taller and darker to blend sky into ground */
+.mountain-layer {
+  position: absolute;
+  bottom: 120px; /* Sits lower behind the grass */
+  width: 100%;
+  height: 40vh; /* Taller to cover more gap */
+  background: linear-gradient(to top, #2e1a47 20%, #4b2d75 60%, transparent 100%);
+  z-index: 2;
+  opacity: 0.9;
+}
+
+/* --- 🛣️ GROUND (The Fix) --- */
+.ground {
+  z-index: 3;
+  top: auto;
+  bottom: 0;
+  height: 200px; /* Fixed height for the grass pattern */
+  background-position: bottom left;
+  background-size: auto 100%;
+  
+  /* 🎨 COLOR FIX: Blend with sunset */
+  /* Lowers brightness & boosts contrast to look like evening grass */
+  filter: sepia(0.4) brightness(0.7) contrast(1.2) hue-rotate(-30deg); 
+}
+
+/* This adds a solid earth block BENEATH the grass pattern so it never floats */
+.ground::after {
+  content: "";
+  position: absolute;
+  top: 99%; /* Starts right at the bottom of the grass image */
+  left: 0;
+  width: 100%;
+  height: 500px; /* Extends way down just in case */
+  background-color: #2e3a1f; /* Dark earthy green matches the filter */
+}
+
+/* --- 🏃 CHARACTERS --- */
+.character-stage {
+  position: absolute;
+  bottom: 40px; /* Push them down slightly into the grass */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+
+/* Add a dark gradient at the very bottom of screen to "frame" the game */
+.vignette::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  z-index: 20;
+  pointer-events: none;
+}
+/* --- 🚴 CHARACTERS --- */
+
+
+.char-totodile {
+  height: 110px;
+  width: auto;
+  /* Pixel art drop shadow */
+  filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.4));
+}
+
+.char-bike {
+  height: 280px;
+  width: auto;
+  filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.4));
+}
+
+/* --- 🎮 UI LAYER --- */
+.ui-layer {
+  position: absolute;
+  top: 15%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.title-wrapper {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+/* MAIN WHITE TEXT */
+.game-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  color: #ffffff;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  /* Thick Outline */
+  -webkit-text-stroke: 2px #2d1b4e;
+  text-transform: uppercase;
+}
+
+/* 3D BLOCK SHADOW EFFECT */
+.title-shadow {
+  font-size: clamp(3rem, 6vw, 5rem);
+  color: #2d1b4e;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+  -webkit-text-stroke: 2px #000;
+  text-transform: uppercase;
+}
+
+.subtitle-badge {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #ffcc00; /* Gold text */
+  background: rgba(45, 27, 78, 0.9); /* Dark purple bg */
+  padding: 8px 24px;
+  border-radius: 50px;
+  border: 2px solid #ffcc00;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* --- 🟡 RETRO BUTTON --- */
+.start-btn {
+  margin-top: 50px;
+  background: #ffcc00; /* Classic Pokemon Gold */
+  color: #2d1b4e;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1.2rem;
+  padding: 18px 36px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  /* 3D Box Look */
+  box-shadow: 
+    inset 4px 4px 0px rgba(255,255,255,0.5), /* Highlight */
+    inset -4px -4px 0px rgba(0,0,0,0.2), /* Inner Shadow */
+    4px 4px 0px #000000; /* Drop Shadow */
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.start-btn:hover {
+  background: #ffe066;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 4px 4px 0px rgba(255,255,255,0.5),
+    inset -4px -4px 0px rgba(0,0,0,0.2),
+    4px 6px 0px #000000; /* Shadow grows */
+}
+
+.start-btn:active {
+  transform: translateY(4px); /* Pushes down */
+  box-shadow: 
+    inset 4px 4px 0px rgba(255,255,255,0.5),
+    inset -4px -4px 0px rgba(0,0,0,0.2),
+    0px 0px 0px #000000; /* Shadow disappears */
+}
+
+/* --- 📺 ATMOSPHERE --- */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.6) 100%);
+  z-index: 15;
+  pointer-events: none;
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+  background-size: 100% 4px;
+  z-index: 16;
+  pointer-events: none;
+}
