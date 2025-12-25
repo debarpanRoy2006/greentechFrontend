@@ -1,0 +1,166 @@
+/* Dashboard.css */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.dashboard-container {
+  padding: 20px;
+  background-color: #222; /* Dark background */
+  min-height: 100vh;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* --- HEADER --- */
+.dashboard-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+/* --- GRID LAYOUT --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Actions take 1/3, Badges take 2/3 */
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* --- PANELS --- */
+.panel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 4px solid #444;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.panel-title {
+  color: #ffcb05; /* Pokemon Yellow */
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+  border-bottom: 2px dashed #555;
+  padding-bottom: 10px;
+}
+
+/* --- BUTTONS --- */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dash-btn {
+  padding: 15px;
+  font-family: 'Press Start 2P';
+  font-size: 0.7rem;
+  border: 4px solid rgba(0,0,0,0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.1s;
+  color: white;
+}
+
+.dash-btn:active {
+  transform: scale(0.98);
+}
+
+.primary { background-color: #3c5aa6; } /* Blue */
+.secondary { background-color: #4caf50; } /* Green */
+.warning { background-color: #d32f2f; } /* Red */
+
+/* --- BADGE GRID --- */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
+}
+
+.badge-card {
+  background: #333;
+  border: 2px solid #555;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-card.unlocked {
+  background: #f0f0f0;
+  border-color: #ffcb05;
+  color: #222;
+}
+
+.badge-icon-circle {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+}
+
+.badge-name {
+  font-size: 0.6rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.badge-desc {
+  font-size: 0.4rem;
+  color: #666;
+}
+
+/* --- HELPER --- */
+.totodile-helper {
+  margin-top: 30px;
+  text-align: center;
+  border-top: 2px solid #444;
+  padding-top: 20px;
+}
+
+.helper-text {
+  font-size: 0.5rem;
+  color: #aaa;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.helper-img {
+  width: 60px;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+}
+
+/* --- POPUP ANIMATION --- */
+.xp-popup {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffcb05;
+  color: #222;
+  padding: 15px 30px;
+  border: 4px solid #fff;
+  z-index: 2000;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from { top: -50px; opacity: 0; }
+  to { top: 100px; opacity: 1; }
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* Stack columns on phone */
+  }
+}

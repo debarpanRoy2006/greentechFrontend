@@ -1,32 +1,34 @@
+// src/App.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+
+// --- COMPONENTS ---
 import Home from "./Pages/Home/Home";
 import LoadingScreen from "./Components/LoadingScreen/LoadingScreen";
+import Footer from "./Components/footer/footer";
+import Navbar from "./Components/Navbar/Navbar";
+import Dashboard from "./Components/Dashboard/Dashboard"; // 🆕 1. Import Dashboard
 
-// --- 1. Import Sounds ---
-// Make sure these files exist in your folder!
+// --- ASSETS (Sounds) ---
 import bgMusicFile from "./assets/sounds/bg.mp3"; 
 import startSoundFile from "./assets/sounds/click.mp3"; 
 
 const App = () => {
-  // --- 2. Global Audio State ---
   const [isMuted, setIsMuted] = useState(false);
   
-  // Use Refs so audio objects persist across route changes
+  // We use this to hide Navbar/Footer on the loading screen
+  const location = useLocation(); 
+
+  // --- AUDIO SETUP ---
   const bgMusicRef = useRef(new Audio(bgMusicFile));
   const startSoundRef = useRef(new Audio(startSoundFile));
 
-  // --- 3. Audio Configuration ---
   useEffect(() => {
-    // Background Music Settings
     bgMusicRef.current.loop = true;
-    bgMusicRef.current.volume = 0.3; // 30% volume
-    
-    // Start Sound Settings
+    bgMusicRef.current.volume = 0.3;
     startSoundRef.current.volume = 0.6;
   }, []);
 
-  // --- 4. Helper Functions ---
   const toggleMute = () => {
     const newState = !isMuted;
     setIsMuted(newState);
@@ -35,77 +37,61 @@ const App = () => {
   };
 
   const playEntrySounds = () => {
-    // This is called when user clicks "Press Start"
-    startSoundRef.current.play().catch(e => console.log("SFX Blocked:", e));
-    bgMusicRef.current.play().catch(e => console.log("BGM Blocked:", e));
+    startSoundRef.current.play().catch(e => console.log(e));
+    bgMusicRef.current.play().catch(e => console.log(e));
   };
 
   return (
-    <main className="max-w-screen overflow-hidden">
+    <main className="max-w-screen min-h-screen overflow-y-auto bg-gray-900">
       
-      {/* --- Global Mute Button (Visible on ALL pages) --- */}
-      <button 
-        onClick={toggleMute} 
-        style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 9999,
-          background: 'rgba(0,0,0,0.6)',
-          color: '#00ff00',
-          border: '1px solid #00ff00',
-          borderRadius: '20px',
-          padding: '8px 16px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontFamily: 'monospace'
-        }}
-      >
-        {isMuted ? "🔇 OFF" : "🔊 ON"}
-      </button>
+      {/* Show Navbar on every page EXCEPT the Loading Screen ("/") */}
+      {location.pathname !== "/" && (
+        <Navbar isMuted={isMuted} toggleMute={toggleMute} />
+      )}
 
       <Routes>
-        {/* Pass the audio trigger down to the loader */}
-        <Route 
-          path="/" 
-          element={<GameLoader onStartAudio={playEntrySounds} />} 
-        />
+        {/* Page 1: The Game Loader */}
+        <Route path="/" element={<GameLoader onStartAudio={playEntrySounds} />} />
+        
+        {/* Page 2: The Home / Landing Page */}
         <Route path="/home" element={<Home />} />
+
+        {/* Page 3: The Dashboard (🆕 ADDED THIS) */}
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
+      
+      {/* Show Footer on every page EXCEPT the Loading Screen */}
+      {location.pathname !== "/" && <Footer />}
+      
     </main>
   );
 };
 
-// 🎮 The Game Loader Logic
+// --- GAME LOADER COMPONENT (Keep this at the bottom or in its own file) ---
+import { useNavigate } from "react-router-dom";
+
 const GameLoader = ({ onStartAudio }) => {
   const [started, setStarted] = useState(false);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
   const handleStart = () => {
-    // 1. Trigger the Global Audio (passed from App)
     if (onStartAudio) onStartAudio();
-    
-    // 2. Start the animation state
     setStarted(true);
   };
 
   useEffect(() => {
     if (!started) return;
-
     const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress >= 100) {
+      setProgress((old) => {
+        if (old >= 100) {
           clearInterval(timer);
-          // Wait 0.5s at 100% then go to Home
           setTimeout(() => navigate("/home"), 500);
           return 100;
         }
-        const diff = Math.random() * 15; 
-        return Math.min(oldProgress + diff, 100);
+        return Math.min(old + Math.random() * 15, 100);
       });
     }, 200);
-
     return () => clearInterval(timer);
   }, [started, navigate]);
 

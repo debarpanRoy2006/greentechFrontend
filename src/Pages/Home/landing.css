@@ -221,3 +221,65 @@
   z-index: 16;
   pointer-events: none;
 }
+/* --- POKEBALL OPENING STYLES --- */
+
+/* 1. The Red Top Half */
+.poke-shutter.top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: #ff0000; /* Pokemon Red */
+  border-bottom: 12px solid #222; /* The black seam */
+  z-index: 999; /* Must be on top of everything */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* 2. The White Bottom Half */
+.poke-shutter.bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: #f0f0f0; /* Pokemon White */
+  border-top: 12px solid #222; /* The black seam */
+  z-index: 999;
+}
+
+/* 3. The Center Button Mechanism */
+.poke-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  background-color: white;
+  border: 12px solid #222;
+  border-radius: 50%;
+  z-index: 1000; /* Above the shutters */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 4. The Inner "Click" Button */
+.poke-button-inner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #222;
+  border-radius: 50%;
+  background: transparent; /* Makes it look like the glass button */
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* Optional: Ensure container clips overflow so animation doesn't cause scrollbars */
+.home-container {
+  overflow: hidden; 
+  position: relative;
+  /* Ensure your height/width is set */
+  height: 100vh;
+  width: 100vw;
+}
