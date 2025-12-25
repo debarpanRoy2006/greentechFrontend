@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
 
-// ⬇️ Import the Gamification Component we designed
-// If you haven't made this file yet, comment this line out!
-import TrainerCard from '../../Components/Gamification/TrainerCard'; 
+// --- 1. IMPORT COMPONENTS (FIXED PATHS) ---
 
-// Assets (Optional: Use your own images or placeholders)
-import scanIcon from '../../assets/images/totodile-pokemon.gif'; // Reusing totodile for now
+// Go UP one folder (../) to find Gamification
+import TrainerCard from '../Gamification/TrainerCard'; 
+
+// Go UP one folder (../) to find Features
+import AqiWidget from '../Features/AqiWidget';
+import CarbonTracker from '../Features/CarbonTracker';
+import EnergyCalc from '../Features/EnergyCalc';
+
+// Go UP two folders (../../) to find assets
+import scanIcon from '../../assets/images/totodile-pokemon.gif'; 
 
 const Dashboard = () => {
-  // --- 1. GAME STATE (Gamification Logic) ---
-  // In a real app, this comes from a database.
+  // --- 2. GAME STATE (XP & Level Logic) ---
   const [userStats, setUserStats] = useState({
     username: "ASH KETCHUM",
     level: 3,
@@ -26,7 +31,7 @@ const Dashboard = () => {
 
   const [notification, setNotification] = useState("");
 
-  // --- 2. ACTION: "SCAN ENVIRONMENT" (The Game Loop) ---
+  // --- 3. THE XP LOOP (Linked to "Scan Area" button) ---
   const handleScan = () => {
     // A. Give XP
     const xpGain = 50;
@@ -40,7 +45,7 @@ const Dashboard = () => {
     if (newXP >= userStats.nextLevelXP) {
       newLevel += 1;
       finalXP = newXP - userStats.nextLevelXP; // Rollover XP
-      nextXP = Math.floor(nextXP * 1.5); // Harder to get next level
+      nextXP = Math.floor(nextXP * 1.5); // Increase difficulty
       setNotification(`🎉 LEVEL UP! YOU ARE NOW LVL ${newLevel}!`);
     } else {
       setNotification(`+${xpGain} XP! Data Collected.`);
@@ -54,14 +59,14 @@ const Dashboard = () => {
       nextLevelXP: nextXP
     });
 
-    // Clear notification after 2 seconds
+    // Clear notification after 3 seconds
     setTimeout(() => setNotification(""), 3000);
   };
 
   return (
     <div className="dashboard-container">
       
-      {/* --- TOP SECTION: TRAINER STATS --- */}
+      {/* --- TOP SECTION: TRAINER CARD --- */}
       <div className="dashboard-header">
         <TrainerCard 
           username={userStats.username} 
@@ -78,31 +83,33 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* --- MAIN CONTENT GRID --- */}
+      {/* --- MAIN DASHBOARD GRID --- */}
       <div className="dashboard-grid">
         
-        {/* LEFT COLUMN: ACTIONS */}
-        <div className="panel action-panel">
-          <h3 className="panel-title">ACTIONS</h3>
-          <div className="action-buttons">
-            <button className="dash-btn primary" onClick={handleScan}>
-              <span className="btn-icon">📡</span> SCAN AREA
-            </button>
-            <button className="dash-btn secondary">
-              <span className="btn-icon">📝</span> LOG WASTE
-            </button>
-            <button className="dash-btn warning">
-              <span className="btn-icon">⚠️</span> REPORT LEAK
-            </button>
-          </div>
+        {/* LEFT COLUMN: ECO TOOLS (The Django Features) */}
+        <div className="panel features-panel">
+          <h3 className="panel-title">FIELD TOOLS</h3>
           
+          {/* 1. Quick Action for XP */}
+          <button className="dash-btn primary full-width" onClick={handleScan}>
+            <span className="btn-icon">📡</span> QUICK SCAN (+50 XP)
+          </button>
+          
+          <div className="spacer" style={{ height: '20px' }}></div>
+
+          {/* 2. The Widgets */}
+          <AqiWidget />
+          <CarbonTracker />
+          <EnergyCalc />
+          
+          {/* Helper Mascot */}
           <div className="totodile-helper">
-             <p className="helper-text">"Totodile says: Keep scanning to earn badges!"</p>
+             <p className="helper-text">"Totodile says: Check your Carbon Footprint daily!"</p>
              <img src={scanIcon} alt="Helper" className="helper-img" />
           </div>
         </div>
 
-        {/* RIGHT COLUMN: ECODEX BADGES */}
+        {/* RIGHT COLUMN: BADGE COLLECTION */}
         <div className="panel badge-panel">
           <h3 className="panel-title">ECODEX COLLECTION</h3>
           <div className="badge-grid">

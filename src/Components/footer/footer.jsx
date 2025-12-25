@@ -14,7 +14,7 @@ const Footer = () => {
         <div className="footer-section">
           <h3 className="footer-title">ECODEX</h3>
           <p>Gotta save the planet!</p>
-          <p className="copyright">© 2025 NITS Hacks Edition</p>
+          <p className="copyright">© 2025 ECODEX Edition</p>
         </div>
 
         {/* Column 2: Quick Links */}
