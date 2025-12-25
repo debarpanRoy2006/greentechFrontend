@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './FeatureStyles.css';
 
 const CarbonTracker = () => {
   const [mode, setMode] = useState('walking');
+  const [distance, setDistance] = useState(5); // Default 5km
   const [result, setResult] = useState(null);
 
-  // Connect this to your Django Backend!
-  const calculateFootprint = () => {
-    // Mock Logic (Replace with API Call)
-    if (mode === 'walking' || mode === 'cycling') {
-      setResult({ type: 'SAVED', amount: '2.5 kg', message: "Great job, Hero!" });
-    } else {
-      setResult({ type: 'WASTED', amount: '12 kg', message: "Try carpooling next time." });
+  const calculateFootprint = async () => {
+    try {
+      // Send data to Django
+      const response = await axios.post('http://127.0.0.1:8000/api/log-transport/', {
+        mode: mode,
+        distance: distance
+      });
+
+      // Django responds with { saved_amount, message }
+      const amount = parseFloat(response.data.saved_amount);
+      
+      setResult({
+        type: amount > 0 ? 'SAVED' : 'EMITTED',
+        amount: `${Math.abs(amount)} kg`,
+        message: response.data.message
+      });
+
+    } catch (error) {
+      console.error("Error logging transport", error);
     }
   };
 
@@ -27,6 +41,15 @@ const CarbonTracker = () => {
           <option value="bus">🚌 Public Bus</option>
           <option value="car">🚗 Private Car</option>
         </select>
+        
+        {/* Added Distance Input */}
+        <label style={{marginTop: '10px', display:'block'}}>Distance (km):</label>
+        <input 
+          type="number" 
+          value={distance} 
+          onChange={(e) => setDistance(e.target.value)}
+          className="retro-input"
+        />
       </div>
 
       <button className="action-btn secondary" onClick={calculateFootprint}>
@@ -34,7 +57,7 @@ const CarbonTracker = () => {
       </button>
 
       {result && (
-        <div className={`result-box ${result.type.toLowerCase()}`}>
+        <div className={`result-box ${result.type === 'EMITTED' ? 'wasted' : 'saved'}`}>
           <span className="result-big">{result.type}: {result.amount} CO2</span>
           <p className="result-msg">{result.message}</p>
         </div>
