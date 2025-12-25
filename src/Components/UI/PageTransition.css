@@ -1,0 +1,23 @@
+.global-shutter {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  height: 0vh; /* Starts open (invisible) */
+  z-index: 99999; /* On top of EVERYTHING */
+  background: #222; /* Dark interior color */
+  border-color: #333;
+  border-style: solid;
+  pointer-events: none; /* Lets you click through when open */
+}
+
+.global-shutter.top {
+  top: 0;
+  background: #d32f2f; /* Red Top */
+  border-bottom-width: 5px;
+}
+
+.global-shutter.bottom {
+  bottom: 0;
+  background: #f0f0f0; /* White Bottom */
+  border-top-width: 5px;
+}

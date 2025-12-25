@@ -1,0 +1,156 @@
+.about-container {
+  min-height: 100vh;
+  background: #111;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  padding-top: 80px; /* Space for Navbar */
+}
+
+/* --- HERO --- */
+.about-hero {
+  text-align: center;
+  padding: 50px 20px;
+  background: radial-gradient(circle, #222 0%, #000 100%);
+  border-bottom: 4px solid #4facfe;
+}
+
+.glitch-text {
+  font-size: 2.5rem;
+  color: #4facfe;
+  text-shadow: 4px 4px 0 #000;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.mission-statement {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  color: #aaa;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* --- SECTIONS --- */
+.about-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dark-bg {
+  background: #1a1a1a;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.text-box h2, .team-section h2 {
+  color: #ffcb05; /* Pokemon Yellow */
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  border-left: 5px solid #ffcb05;
+  padding-left: 15px;
+}
+
+.text-box p {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.feature-list {
+  list-style: none;
+  font-family: 'Roboto', sans-serif;
+}
+.feature-list li { margin-bottom: 10px; }
+
+/* --- HOLO CARD --- */
+.holo-card {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  background: rgba(79, 172, 254, 0.1);
+  border: 2px solid #4facfe;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
+}
+
+.mascot-float {
+  width: 100px;
+  animation: float 3s infinite ease-in-out;
+}
+
+.holo-scanline {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  animation: scan 2s linear infinite;
+}
+
+/* --- TEAM GRID --- */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.team-card {
+  background: #222;
+  border: 4px solid #333;
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.team-card:hover {
+  transform: translateY(-10px);
+  border-color: #4facfe;
+}
+
+.member-avatar {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.team-card h3 { color: #fff; margin-bottom: 5px; font-size: 1rem; }
+.team-card .role { color: #4facfe; font-size: 0.7rem; display: block; margin-bottom: 10px; }
+.team-card p { font-family: 'Roboto', sans-serif; color: #888; font-size: 0.8rem; }
+
+/* --- FOOTER --- */
+.about-footer {
+  text-align: center;
+  padding: 50px 20px;
+  background: #000;
+  border-top: 1px solid #333;
+}
+
+.retro-btn {
+  margin-top: 20px;
+  background: #d32f2f;
+  color: white;
+  border: 4px solid #fff;
+  padding: 15px 30px;
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.retro-btn:hover { background: #ff0000; }
+
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+
+@media (max-width: 768px) {
+  .section-grid { grid-template-columns: 1fr; }
+  .glitch-text { font-size: 1.5rem; }
+}

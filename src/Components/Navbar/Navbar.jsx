@@ -31,7 +31,7 @@ const Navbar = ({ isMuted, toggleMute }) => {
           DASHBOARD
         </Link>
         <Link to="/about" className={`nav-item ${isActive('/about')}`}>
-          TEAM
+          ABOUT
         </Link>
         
         {/* The Audio Toggle (Moved inside Navbar) */}

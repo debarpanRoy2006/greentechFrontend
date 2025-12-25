@@ -79,3 +79,44 @@
 }
 .cost-display { color: #ffcb05; font-size: 0.8rem; margin-bottom: 5px; }
 .opt-tip { font-size: 0.5rem; line-height: 1.4; }
+/* PokeStop Spin Widget */
+.spin-card {
+  text-align: center;
+  background: #1a1a1a;
+  border-color: #4facfe; /* Blue like a PokeStop */
+}
+
+.spin-card.claimed {
+  border-color: #888;
+  opacity: 0.8;
+}
+
+.spin-container {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.spin-circle-outer {
+  width: 80px;
+  height: 80px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(79, 172, 254, 0.2);
+  box-shadow: 0 0 15px #4facfe;
+}
+
+.spin-icon {
+  font-size: 2.5rem;
+  user-select: none;
+}
+
+.spin-text {
+  font-size: 0.6rem;
+  color: #aaa;
+}

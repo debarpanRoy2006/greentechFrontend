@@ -1,0 +1,178 @@
+/* --- CONTAINER --- */
+.badge-case-container {
+  background: #d32f2f; /* Pokedex Red */
+  border: 4px solid #8b0000;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+  position: relative; /* Important for absolute lid */
+  height: 100%;
+  min-height: 300px; /* Ensure height for lid */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Clips the lid when it slides up */
+  cursor: pointer;
+}
+
+/* --- THE LID (Cover) --- */
+.case-lid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #ff4444, #cc0000);
+  z-index: 20; /* Sits on top */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bounce effect */
+  border-bottom: 10px solid #8b0000;
+}
+
+/* Open State: Slide UP out of view */
+.case-lid.open {
+  transform: translateY(-110%);
+}
+
+.lid-content {
+  text-align: center;
+  color: white;
+  font-family: 'Press Start 2P';
+}
+
+.pokeball-logo {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  border: 8px solid #222;
+  position: relative;
+  box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
+}
+
+.pokeball-logo::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 0;
+  width: 100%; height: 50%;
+  background: #222; /* Use black for the center line if simple */
+  /* OR create the pokeball line detail */
+  height: 8px;
+  transform: translateY(-50%);
+}
+
+.lid-title {
+  font-size: 1rem;
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 10px;
+}
+
+.lid-subtitle {
+  font-size: 0.6rem;
+  color: #ffcb05;
+  animation: blink 1s infinite;
+}
+
+/* --- INTERIOR HEADER --- */
+.case-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-family: 'Press Start 2P';
+  color: white;
+  font-size: 0.7rem;
+}
+
+.case-led {
+  width: 12px;
+  height: 12px;
+  background: #333; /* Dark when off */
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: background 0.2s;
+}
+
+.case-led.on {
+  background: #00ff00;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+/* --- VELVET BOX (Interior) --- */
+.velvet-box {
+  background: radial-gradient(circle, #2a2a2a 0%, #111 100%);
+  border: 4px solid #555;
+  border-radius: 10px;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  padding: 15px;
+  box-shadow: inset 0 0 20px #000;
+}
+
+/* --- SLOTS & BADGES --- */
+.badge-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.badge-slot.filled:hover {
+  transform: scale(1.1) translateY(-5px);
+}
+
+.empty-socket {
+  width: 45px;
+  height: 45px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+}
+
+.gym-badge {
+  font-size: 2rem;
+  filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5));
+}
+
+.gym-badge.silhouetted {
+  filter: grayscale(100%) brightness(0.2);
+  opacity: 0.5;
+}
+
+.badge-label {
+  margin-top: 5px;
+  font-family: 'Press Start 2P';
+  font-size: 0.4rem;
+  color: #aaa;
+  text-align: center;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+/* ... other styles ... */
+
+/* --- VELVET BOX (Interior) --- */
+.velvet-box {
+  background: radial-gradient(circle, #2a2a2a 0%, #111 100%);
+  border: 4px solid #555;
+  border-radius: 10px;
+  flex: 1;
+  display: grid;
+  
+  /* 🔴 UPDATE GRID HERE */
+  grid-template-columns: repeat(4, 1fr); /* 4 Columns */
+  grid-template-rows: repeat(3, 1fr);    /* 3 Rows (Total 12) */
+  
+  gap: 10px;
+  padding: 15px;
+  box-shadow: inset 0 0 20px #000;
+  overflow-y: auto; /* Adds scroll if screen is too small */
+}
+
+/* ... rest of styles ... */

@@ -8,8 +8,12 @@ import LoadingScreen from "./Components/LoadingScreen/LoadingScreen";
 import Footer from "./Components/footer/footer";
 import Navbar from "./Components/Navbar/Navbar";
 import Dashboard from "./Components/Dashboard/Dashboard"; // 🆕 1. Import Dashboard
+// src/App.jsx
+import PageTransition from './Components/UI/PageTransition';
+// 🔄 UPDATE THIS LINE:
+import About from './Pages/AboutUs/About';
 
-// --- ASSETS (Sounds) ---
+
 import bgMusicFile from "./assets/sounds/bg.mp3"; 
 import startSoundFile from "./assets/sounds/click.mp3"; 
 
@@ -48,6 +52,7 @@ const App = () => {
       {location.pathname !== "/" && (
         <Navbar isMuted={isMuted} toggleMute={toggleMute} />
       )}
+      <PageTransition />
 
       <Routes>
         {/* Page 1: The Game Loader */}
@@ -58,6 +63,7 @@ const App = () => {
 
         {/* Page 3: The Dashboard (🆕 ADDED THIS) */}
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/about" element={<About />} />
       </Routes>
       
       {/* Show Footer on every page EXCEPT the Loading Screen */}
