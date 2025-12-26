@@ -102,9 +102,7 @@ npm install
 npm run dev
 The frontend will start at http://localhost:5173.
 
-📂 Project Structure
-Plaintext
-
+## 📂 Project Structure
 GreenTech/
 ├── greentech_backend/       # Django Backend
 │   ├── api/                 # API Views, Models, Serializers
@@ -123,7 +121,9 @@ GreenTech/
 │   │   └── App.jsx
 │   └── package.json
 └── README.md
-🕹️ How to Play
+
+
+How to play
 Dashboard: View your Level, XP, and Current Badges.
 
 Log Contribution: Click "Access Terminal" -> "Input Stream" to log actions like "Recycle" or "Plant Tree". Watch your XP grow!
