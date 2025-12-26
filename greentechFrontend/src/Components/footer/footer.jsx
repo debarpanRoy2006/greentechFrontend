@@ -31,7 +31,7 @@ const Footer = () => {
         <div className="footer-section">
           <h4 className="footer-subtitle">COMMUNICATION</h4>
           <div className="social-icons">
-            <a href="#" className="social-btn">GITHUB</a>
+            <a href="https://github.com/debarpanRoy2006/greentechFrontend/" className="social-btn">GITHUB</a>
             <a href="#" className="social-btn">DISCORD</a>
           </div>
         </div>

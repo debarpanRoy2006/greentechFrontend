@@ -1,0 +1,22 @@
+/* src/index.css */
+
+/* 1. Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Prevents padding from adding to width */
+}
+
+/* 2. Full Height & No Side Scroll */
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden; /* Kills the sideways scrollbar */
+  background-color: #0d0d0d; /* Matches your dashboard theme */
+}
+
+/* 3. Global Font */
+body {
+  font-family: 'Press Start 2P', cursive;
+  -webkit-font-smoothing: antialiased;
+}

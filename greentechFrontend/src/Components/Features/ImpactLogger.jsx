@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Leaf, Droplets, Recycle, Send, CheckCircle } from 'lucide-react';
+import { Leaf, CheckCircle, Send, AlertTriangle } from 'lucide-react';
 
-const ImpactLogger = () => {
+const ImpactLogger = ({ onSuccess }) => {
   const [actionType, setActionType] = useState('recycle');
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // 'success' or 'error'
+  const [status, setStatus] = useState(null); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,16 +13,19 @@ const ImpactLogger = () => {
     setStatus(null);
 
     try {
-      // Replace with your actual Django endpoint
+      // 1. Send data to Backend
+      // Ensure this URL matches your Django setting
       await axios.post('http://127.0.0.1:8000/api/log-impact/', {
-        action: actionType,
-        // In a real app, you'd get this ID from your Auth Context/Session
-        user_id: 1, 
-        timestamp: new Date().toISOString()
+        action: actionType
       });
       
       setStatus('success');
-      // Reset success message after 3 seconds
+      
+      // 2. Refresh the Dashboard XP
+      if (onSuccess) {
+          onSuccess(); 
+      }
+      
       setTimeout(() => setStatus(null), 3000);
       
     } catch (error) {
@@ -34,61 +37,53 @@ const ImpactLogger = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-      <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-        <Leaf className="text-green-500" /> Log Contribution
+    <div className="bg-transparent p-2">
+      <h3 className="text-sm font-bold mb-4 text-cyan-400 flex items-center gap-2 font-press-start">
+        <Leaf size={16} /> LOG CONTRIBUTION
       </h3>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            What did you do today?
-          </label>
-          <div className="relative">
-            <select 
-              value={actionType} 
-              onChange={(e) => setActionType(e.target.value)}
-              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-            >
-              <option value="recycle">♻️ Recycled Plastic/Paper</option>
-              <option value="plant_tree">🌳 Planted a Tree</option>
-              <option value="save_water">💧 Saved Water (Bucket Bath)</option>
-              <option value="public_transport">🚌 Used Public Transport</option>
-              <option value="energy_save">💡 Turned Off Unused Lights</option>
-            </select>
-          </div>
+      <form onSubmit={handleSubmit} className="impact-form-container">
+        
+        {/* CUSTOM DROPDOWN */}
+        <div className="relative">
+          <select 
+            value={actionType} 
+            onChange={(e) => setActionType(e.target.value)}
+            className="cyber-select"
+          >
+            <option value="recycle">♻️ RECYCLE PLASTIC/PAPER</option>
+            <option value="plant_tree">🌳 PLANTED A TREE (+100 XP)</option>
+            <option value="save_water">💧 SAVED WATER</option>
+            <option value="public_transport">🚌 PUBLIC TRANSPORT</option>
+            <option value="energy_save">💡 SAVED ENERGY</option>
+          </select>
         </div>
 
+        {/* CUSTOM BUTTON */}
         <button 
           type="submit" 
           disabled={loading}
-          className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-white transition-all
-            ${loading 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-green-600 hover:bg-green-700 hover:shadow-md'
-            }`}
+          className="cyber-btn-submit"
         >
-          {loading ? 'Logging...' : 'Submit Impact'}
-          {!loading && <Send size={18} />}
+          {loading ? 'UPLOADING...' : 'SUBMIT DATA'}
+          {!loading && <Send size={14} strokeWidth={3} />}
         </button>
 
-        {/* Feedback Messages */}
+        {/* STATUS MESSAGES */}
         {status === 'success' && (
-          <div className="flex items-center gap-2 text-green-600 bg-green-50 p-3 rounded-lg text-sm animate-fade-in">
-            <CheckCircle size={16} />
-            <span>Success! Points added to leaderboard.</span>
+          <div className="flex items-center gap-2 text-green-400 bg-green-900/30 p-2 border border-green-700 mt-2 text-[0.6rem] font-press-start animate-pulse">
+            <CheckCircle size={12} />
+            <span>UPLOAD COMPLETE.</span>
           </div>
         )}
         
         {status === 'error' && (
-          <div className="text-red-600 bg-red-50 p-3 rounded-lg text-sm text-center">
-            Failed to connect to server. Is Django running?
+          <div className="flex items-center gap-2 text-red-400 bg-red-900/30 p-2 border border-red-700 mt-2 text-[0.6rem] font-press-start">
+            <AlertTriangle size={12} />
+            <span>CONNECTION ERROR.</span>
           </div>
         )}
       </form>
-
-      {/* Mini Stat Preview */}
-      
     </div>
   );
 };

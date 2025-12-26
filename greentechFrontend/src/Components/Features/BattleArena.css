@@ -2,7 +2,7 @@
    1. DASHBOARD TRIGGER CARD (Idle State)
    ========================================= */
 .battle-trigger-card {
-  grid-column: 1 / -1; /* Spans full width of Dashboard grid */
+  grid-column: 1 / -1;
   height: 120px;
   background: repeating-linear-gradient(
     45deg,
@@ -11,7 +11,7 @@
     #3a0a0a 10px,
     #3a0a0a 20px
   );
-  border: 4px solid #d32f2f; /* Red Warning Border */
+  border: 4px solid #d32f2f;
   border-radius: 10px;
   padding: 20px;
   cursor: pointer;
@@ -27,7 +27,7 @@
 
 .battle-trigger-card:hover {
   transform: scale(1.02);
-  background: #d32f2f; /* Turns solid red on hover */
+  background: #d32f2f;
 }
 
 .trigger-icon {
@@ -44,7 +44,7 @@
 
 .trigger-text p {
   font-size: 0.5rem;
-  color: #ffcb05; /* Pokemon Yellow */
+  color: #ffcb05;
 }
 
 @keyframes pulse { 
@@ -55,23 +55,27 @@
 
 
 /* =========================================
-   2. FULL SCREEN OVERLAY (Active Battle)
+   2. FULL SCREEN OVERLAY
    ========================================= */
 .battle-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999; /* Stays on top of Navbar/Footer */
+  width: 100%;  /* Changed from 100vw */
+  height: 100%; /* Changed from 100vh */
+  z-index: 9999;
   background: #000;
   display: flex;
   flex-direction: column;
 }
 
+.battle-overlay * {
+    box-sizing: border-box;
+}
+
 
 /* =========================================
-   3. LOADING SCREEN (Retro Style)
+   3. LOADING SCREEN
    ========================================= */
 .battle-loading {
   height: 100%;
@@ -79,7 +83,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #4caf50; /* Hacker Green */
+  color: #4caf50;
   font-family: 'Press Start 2P';
 }
 
@@ -105,127 +109,137 @@
 
 
 /* =========================================
-   4. THE BATTLE ARENA SCENE
+   4. BATTLE ARENA SCENE
    ========================================= */
 .battle-arena {
   position: relative;
   width: 100%;
   height: 100%;
-  /* Classic Pokemon Background: Blue Sky + Green Grass */
-  background: linear-gradient(to bottom, #87CEEB 55%, #4caf50 55%);
+  background: linear-gradient(to bottom, #87CEEB 60%, #4caf50 60%); 
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.shake-screen {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
 
-/* --- SHUTTERS (Pokeball Opening Effect) --- */
+@keyframes shake {
+  10%, 90% { transform: translate3d(-4px, 0, 0); }
+  20%, 80% { transform: translate3d(8px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+  40%, 60% { transform: translate3d(8px, 0, 0); }
+}
+
+/* --- SHUTTERS --- */
 .shutter {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 55%; /* Slight overlap to hide seams */
+  height: 55%;
   z-index: 20;
   border-color: #222;
   border-style: solid;
 }
-
-.shutter.top {
-  top: 0;
-  background: #ff0000; /* Red Top */
-  border-bottom-width: 10px;
-}
-
-.shutter.bottom {
-  bottom: 0;
-  background: #f0f0f0; /* White Bottom */
-  border-top-width: 10px;
-}
+.shutter.top { top: 0; background: #ff0000; border-bottom-width: 10px; }
+.shutter.bottom { bottom: 0; background: #f0f0f0; border-top-width: 10px; }
 
 
 /* =========================================
-   5. MONSTER & ATTACK STAGE
+   5. BATTLE HUDS (COMPACTED)
+   ========================================= */
+.battle-hud {
+    position: absolute;
+    background: #f8f8f8;
+    border: 3px solid #333;
+    border-radius: 8px 0 8px 0;
+    padding: 5px 10px; 
+    z-index: 10;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+    font-family: 'Press Start 2P';
+    width: 220px; 
+}
+
+/* Enemy HUD */
+.enemy-hud {
+    top: 20px; 
+    left: 20px;
+}
+.enemy-hud::after {
+    content: ''; position: absolute; bottom: -8px; left: 0;
+    border-left: 15px solid #333; border-top: 8px solid transparent;
+}
+
+/* Player HUD */
+.player-hud {
+    right: 20px;
+    bottom: 180px; /* Sits right above the UI */
+}
+
+.hud-info {
+    display: flex; justify-content: space-between;
+    font-size: 0.5rem; color: #333; margin-bottom: 3px; font-weight: bold;
+}
+
+.hp-bar-container {
+    display: flex; align-items: center; gap: 4px;
+    background: #333; padding: 2px; border-radius: 3px;
+}
+
+.hp-label { color: #ffcb05; font-size: 0.4rem; padding: 0 2px; }
+
+.hp-track { flex: 1; height: 8px; background: #555; position: relative; }
+.hp-fill { height: 100%; background: #4caf50; transition: width 0.5s ease-out; }
+.hp-fill.critical { background: #ef4444; animation: pulse 0.5s infinite; }
+
+
+/* =========================================
+   6. MONSTER STAGE
    ========================================= */
 .monster-stage {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding-bottom: 150px; /* Space for the UI box */
-  position: relative; /* Essential for absolute positioning of attacks */
+  align-items: center;
+  position: relative;
+  z-index: 5;
+  /* Push content UP slightly so it's not hidden by the bottom bar */
+  padding-bottom: 40px; 
 }
 
-/* --- VILLAIN (GENGAR) --- */
 .villain-img {
-  width: 280px; /* Adjust based on your GIF size */
-  height: auto;
-  image-rendering: pixelated; /* Keeps pixel art crisp */
+  width: 220px; 
+  image-rendering: pixelated;
   filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4));
   animation: floatEnemy 3s ease-in-out infinite;
-  z-index: 5;
 }
 
 @keyframes floatEnemy {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-15px); }
 }
 
-/* --- HP BAR --- */
-.hp-container {
-  width: 300px;
-  height: 25px;
-  background: #555;
-  border: 4px solid #222;
-  border-radius: 4px;
-  margin-top: 30px;
-  position: relative;
-  z-index: 5;
-  box-shadow: 2px 2px 0 #fff;
-}
-
-.hp-fill {
-  height: 100%;
-  background: #4caf50; /* Green HP */
-  transition: width 0.5s ease-out;
-}
-
-/* --- ATTACK VFX (The GIFs) --- */
-.attack-vfx {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -60%); /* Perfect center over monster */
-  z-index: 30; /* Must be ON TOP of Gengar */
-  pointer-events: none; /* Allows clicks to pass through */
-}
-
-.attack-vfx.thunder {
-  width: 500px; /* Make Thundershock HUGE */
-  opacity: 1;
-  filter: drop-shadow(0 0 20px yellow);
-}
-
-.attack-vfx.tail {
-  width: 250px;
-  opacity: 0.8;
+.fainting-anim { animation: faint 2s forwards; }
+@keyframes faint {
+    0% { filter: brightness(1) hue-rotate(0deg); transform: translateY(0) scale(1); }
+    30% { filter: brightness(3) sepia(1) hue-rotate(-50deg); }
+    100% { filter: brightness(0); transform: translateY(100px) scale(0); opacity: 0; }
 }
 
 
 /* =========================================
-   6. BATTLE UI (Bottom Box)
+   7. BATTLE UI (SHORTER & FIXED GRID)
    ========================================= */
 .battle-ui {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 200px;
+  position: absolute; bottom: 0; width: 100%;
+  height: 160px; /* Reduced Height to fix overlap */
   background: #222;
-  border-top: 6px solid #f0f0f0;
-  padding: 20px 40px;
+  border-top: 5px solid #f0f0f0;
   display: flex;
-  gap: 30px;
-  z-index: 10;
+  gap: 15px;
+  padding: 15px;
+  z-index: 50;
   font-family: 'Press Start 2P';
   color: white;
   box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
@@ -233,82 +247,59 @@
 
 /* Text Box */
 .dialog-box {
-  flex: 2;
-  border: 4px solid #555;
+  flex: 1.5;
+  border: 3px solid #555;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 20px;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  display: flex;
-  align-items: center;
+  border-radius: 6px;
+  padding: 15px;
+  font-size: 0.7rem; 
+  line-height: 1.5;
+  display: flex; align-items: center;
+  overflow-y: auto;
 }
 
 /* Buttons Container */
 .action-box {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  justify-content: center;
+  display: grid; 
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  min-width: 260px;
 }
 
 /* Buttons */
 .battle-btn {
-  width: 100%;
-  padding: 15px;
+  width: 100%; height: 100%;
   background: #fff;
-  border: 4px solid #222;
-  border-radius: 5px;
+  border: 3px solid #222;
+  border-radius: 4px;
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.55rem;
   cursor: pointer;
   text-transform: uppercase;
   transition: all 0.1s;
-  box-shadow: 4px 4px 0 #000;
+  box-shadow: 3px 3px 0 #000;
+  color: #000;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 2px;
 }
 
-.battle-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #000;
-}
-
-.battle-btn:hover {
-  background: #ffcb05; /* Yellow hover */
-}
-
-/* Highlight the Correct Answer Button */
-.battle-btn.primary-atk {
-  background: #fffde7;
-  border-color: #ffcb05;
-}
+.battle-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+.battle-btn:hover { background: #ffcb05; }
 
 
 /* =========================================
-   7. RESPONSIVE (Mobile)
+   8. RESPONSIVE
    ========================================= */
 @media (max-width: 768px) {
   .battle-ui {
-    flex-direction: column;
-    height: 300px;
-    padding: 15px;
-    gap: 10px;
+    flex-direction: column; height: auto; min-height: 250px;
   }
-  
-  .dialog-box {
-    font-size: 0.6rem;
-    flex: 1;
-  }
-
-  .action-box {
-    flex: 1;
-  }
-
-  .villain-img {
-    width: 180px; /* Smaller Gengar for phones */
-  }
-  
-  .attack-vfx.thunder {
-    width: 300px;
-  }
+  .action-box { min-height: 120px; }
+  .battle-hud { width: 180px; font-size: 0.6rem; }
+  .villain-img { width: 140px; }
+  .player-hud { bottom: 260px; right: 10px; }
+  .enemy-hud { top: 10px; left: 10px; }
 }

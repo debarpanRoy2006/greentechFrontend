@@ -4,11 +4,9 @@ import togopie from "../../assets/images/togopie.gif";
 
 const LoadingScreen = ({ progress, hasStarted, onStart }) => {
   return (
-    // If started, add a 'game-active' class for CSS transitions
     <div className={`loading-container ${hasStarted ? "game-active" : ""}`}>
       
       <div className="logo-section">
-        {/* The logo gets a 'pop' animation when started */}
         <h1 className={`loading-logo ${hasStarted ? "pop-anim" : ""}`}>
           Ecodex
         </h1>
@@ -19,16 +17,18 @@ const LoadingScreen = ({ progress, hasStarted, onStart }) => {
 
       <div className="interaction-area">
         {!hasStarted ? (
-          /* --- STATE 1: PRESS START --- */
           <button className="press-start-btn" onClick={onStart}>
             <span>▶ PRESS START</span>
           </button>
         ) : (
-          /* --- STATE 2: LOADING BAR --- */
           <div className="progress-section fade-in">
+             {/* UPDATED LOGIC: 
+                1. Use 'left' to track the tip of the bar.
+                2. Removed width style here, handled in CSS.
+             */}
              <div 
                 className="runner-container" 
-                style={{ width: `${progress}%` }}
+                style={{ left: `${progress}%` }}
             >
                  <img src={togopie} alt="Togopie" className="togopie-runner" />
             </div>
