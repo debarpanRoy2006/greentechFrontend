@@ -1,51 +1,50 @@
-🌍 EcoDex: Gamified Environmental Dashboard
-EcoDex is a retro-futuristic, cyberpunk-themed web application that gamifies eco-friendly habits. It combines a React frontend with a Django backend to track your environmental impact, calculate carbon footprints, and monitor real-time air quality, all while leveling up your RPG-style character.
+# 🌍 EcoDex: Gamified Environmental Dashboard
 
-✨ Features
-🎮 Gamification System: Earn XP and level up by logging real-world eco-actions (Recycling, Planting Trees, Saving Water).
+![EcoDex Banner](https://via.placeholder.com/1000x300/0b0d17/06b6d4?text=ECODEX_SYSTEM_ONLINE)
 
-⚔️ Battle Arena: Fight "Pollution Monsters" (like Gengar) in a turn-based RPG quiz battle to save the environment.
+**EcoDex** is a retro-futuristic, cyberpunk-themed web application that gamifies eco-friendly habits. It combines a **React** frontend with a **Django** backend to track your environmental impact, calculate carbon footprints, and monitor real-time air quality, all while leveling up your RPG-style character.
 
-📊 Impact Tools:
+---
 
-Carbon Tracker: Calculate CO2 emissions/savings based on transport modes.
+## ✨ Features
 
-Energy Calculator: Estimate electricity costs and breakdown by appliance.
+* **🎮 Gamification System**: Earn XP and level up by logging real-world eco-actions (Recycling, Planting Trees, Saving Water).
+* **⚔️ Battle Arena**: Fight "Pollution Monsters" (like Gengar) in a turn-based RPG quiz battle to save the environment.
+* **📊 Impact Tools**:
+    * **Carbon Tracker**: Calculate CO2 emissions/savings based on transport modes.
+    * **Energy Calculator**: Estimate electricity costs and breakdown by appliance.
+    * **Impact Logger**: Log daily activities to update your stats.
+* **🌬️ Live Air Scanner**: Real-time Air Quality Index (AQI) monitoring using the World Air Quality Index API.
+* **🏆 Badge System**: Unlock pixel-art badges for specific achievements.
+* **🎨 Cyber-Retro UI**: A fully responsive interface featuring pixel fonts, neon glows, and interactive HUD modals.
 
-Impact Logger: Log daily activities to update your stats.
+---
 
-🌬️ Live Air Scanner: Real-time Air Quality Index (AQI) monitoring using the World Air Quality Index API.
+## 🛠️ Tech Stack
 
-🏆 Badge System: Unlock pixel-art badges for specific achievements.
+### **Frontend**
+* React (Vite)
+* CSS3 (Custom Cyberpunk/Retro Styles)
+* GSAP (Animations)
+* Lucide React (Icons)
+* Axios (API Requests)
 
-🎨 Cyber-Retro UI: A fully responsive interface featuring pixel fonts, neon glows, and interactive HUD modals.
+### **Backend**
+* Django (Python Framework)
+* Django Rest Framework (API)
+* SQLite (Database)
+* Python-dotenv (Environment Management)
 
-🛠️ Tech Stack
-Frontend
-React (Vite)
+---
 
-CSS3 (Custom Cyberpunk/Retro Styles)
+## 🚀 Installation & Setup
 
-GSAP (Animations)
-
-Lucide React (Icons)
-
-Axios (API Requests)
-
-Backend
-Django (Python Framework)
-
-Django Rest Framework (API)
-
-SQLite (Database)
-
-Python-dotenv (Environment Management)
-
-🚀 Installation & Setup
 Follow these steps to get the project running locally.
 
-1. Clone the Repository
-Bash
+
+### **1. Clone the Repository**
+git clone <YOUR_REPO_URL>
+cd GreenTech
 
 git clone <YOUR_REPO_URL>
 cd GreenTech
