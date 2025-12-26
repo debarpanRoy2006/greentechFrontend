@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './BattleArena.css';
 
 // Only importing Gengar now
-import gengarSprite from '../../assets/images/gengar.gif';
+import gengarSprite from '../../assets/images/Gengar.gif';
 // import pikachuSprite from '../../assets/images/pikachu.gif'; // REMOVED
 
 const BattleArena = ({ onWin }) => {
