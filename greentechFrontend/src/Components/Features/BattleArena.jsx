@@ -1,169 +1,150 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import React, { useState, useEffect } from 'react';
 import './BattleArena.css';
 
-// --- IMPORTS ---
-import battleMusicFile from '../../assets/sounds/battle-theme.mp3'; 
-import gengarGif from '../../assets/images/gengar.gif';
-import thunderGif from '../../assets/images/thundershock.gif';
-import tailGif from '../../assets/images/tailattack.gif';
+// Only importing Gengar now
+import gengarSprite from '../../assets/images/gengar.gif';
+// import pikachuSprite from '../../assets/images/pikachu.gif'; // REMOVED
 
 const BattleArena = ({ onWin }) => {
-  // Game States
-  const [gameState, setGameState] = useState('idle'); // idle, loading, battle, victory
-  const [loadProgress, setLoadProgress] = useState(0);
-  const [monsterHp, setMonsterHp] = useState(100);
-  const [battleLog, setBattleLog] = useState("A wild GENGAR appeared!");
-  const [attackAnim, setAttackAnim] = useState('none'); // 'none', 'thunder', 'tail'
+  const [playerHealth, setPlayerHealth] = useState(100);
+  const [enemyHealth, setEnemyHealth] = useState(100);
+  const [gameLog, setGameLog] = useState(["⚠️ A wild POLLUTION MONSTER appeared!"]);
+  const [isPlayerTurn, setIsPlayerTurn] = useState(true);
+  const [battleOver, setBattleOver] = useState(false);
 
-  // Refs
-  const topRef = useRef(null);
-  const botRef = useRef(null);
-  const battleAudioRef = useRef(new Audio(battleMusicFile));
-
-  // --- 1. START LOADING SEQUENCE ---
-  const startEncounter = () => {
-    setGameState('loading');
-    setLoadProgress(0);
-    // Simulate loading bar
-    const interval = setInterval(() => {
-      setLoadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setGameState('battle'), 500); 
-          return 100;
-        }
-        return prev + 2; 
-      });
-    }, 50);
-  };
-
-  // --- 2. HANDLE ANIMATIONS & MUSIC ---
+  // Simple AI turn
   useEffect(() => {
-    // A. Shutter Animation
-    if (gameState === 'battle') {
-      const tl = gsap.timeline();
-      tl.set([topRef.current, botRef.current], { y: 0 })
-        .to(topRef.current, { y: '-100%', duration: 1.5, ease: 'power3.inOut', delay: 0.2 })
-        .to(botRef.current, { y: '100%', duration: 1.5, ease: 'power3.inOut' }, "<");
-    }
-
-    // B. Music Control
-    const audio = battleAudioRef.current;
-    if (gameState === 'battle') {
-      audio.currentTime = 0; 
-      audio.volume = 0.5;    
-      audio.loop = true;     
-      audio.play().catch(e => console.log("Audio play failed:", e));
-    } else if (gameState === 'victory' || gameState === 'idle') {
-      audio.pause();         
-      audio.currentTime = 0; 
-    }
-    return () => { audio.pause(); };
-  }, [gameState]);
-
-  // --- 3. BATTLE LOGIC ---
-  const handleAttack = (isCorrect) => {
-    if (isCorrect) {
-      // WINNING MOVE: THUNDERSHOCK
-      setAttackAnim('thunder');
-      setBattleLog("Ash used THUNDERSHOCK! It's super effective!");
-
-      // Delay victory so animation plays
+    if (!isPlayerTurn && !battleOver && enemyHealth > 0) {
       setTimeout(() => {
-          setMonsterHp(0);
-          setBattleLog("Gengar fainted! The pollution is clearing!");
-          setAttackAnim('none'); 
-          setTimeout(() => setGameState('victory'), 2000); 
-      }, 1500); 
-
-    } else {
-      // WEAK MOVE: TAIL WHIP
-      setAttackAnim('tail');
-      setBattleLog("Ash used TAIL WHIP... It's not very effective.");
-      setTimeout(() => setAttackAnim('none'), 1000);
+        const damage = Math.floor(Math.random() * 20) + 5;
+        setPlayerHealth(prev => Math.max(0, prev - damage));
+        addLog(`🔻 Enemy used TOXIC SLUDGE! You took ${damage} DMG.`);
+        setIsPlayerTurn(true);
+      }, 1500);
     }
+  }, [isPlayerTurn, battleOver, enemyHealth]);
+
+  // Check win/loss condition
+  useEffect(() => {
+    if (enemyHealth <= 0 && !battleOver) {
+       setBattleOver(true);
+       addLog("🏆 Enemy defeated! The air is clearing...");
+       setTimeout(() => {
+          if (onWin) onWin();
+       }, 2000);
+    } else if (playerHealth <= 0 && !battleOver) {
+       setBattleOver(true);
+       addLog("💀 You were overwhelmed by pollution...");
+    }
+  }, [enemyHealth, playerHealth, battleOver, onWin]);
+
+  const addLog = (msg) => {
+    setGameLog(prev => [msg, ...prev].slice(0, 5));
   };
 
-  // --- RENDER: IDLE CARD (Dashboard View) ---
-  if (gameState === 'idle') {
-    return (
-      <div className="battle-trigger-card" onClick={startEncounter}>
-        <div className="trigger-icon">⚠️</div>
-        <div className="trigger-text">
-          <h3>BOSS BATTLE DETECTED</h3>
-          <p>CLICK TO ENGAGE</p>
-        </div>
-      </div>
-    );
-  }
+  const handleAttack = (type) => {
+    if (!isPlayerTurn || battleOver) return;
 
-  // --- RENDER: FULL SCREEN ARENA ---
+    let damage = 0;
+    let moveName = "";
+
+    switch(type) {
+      case 'quick':
+        damage = Math.floor(Math.random() * 15) + 10;
+        moveName = "RECYCLE RUSH";
+        break;
+      case 'heavy':
+        damage = Math.floor(Math.random() * 30) + 5;
+        moveName = "SOLAR BEAM";
+        break;
+      case 'heal':
+        const healAmount = 30;
+        setPlayerHealth(prev => Math.min(100, prev + healAmount));
+        addLog(`💚 Used PURIFY! Healed +${healAmount} HP.`);
+        setIsPlayerTurn(false);
+        return;
+      default: break;
+    }
+
+    setEnemyHealth(prev => Math.max(0, prev - damage));
+    addLog(`⚔️ Used ${moveName}! Dealt ${damage} DMG.`);
+    setIsPlayerTurn(false);
+  };
+
   return (
-    <div className="battle-overlay">
+    <div className="battle-container">
       
-      {/* Loading Screen */}
-      {gameState === 'loading' && (
-        <div className="battle-loading">
-          <h1>LOADING ENCOUNTER...</h1>
-          <div className="loader-bar">
-            <div className="loader-fill" style={{ width: `${loadProgress}%` }}></div>
-          </div>
+      {/* --- THE BATTLE STAGE --- */}
+      {/* Added justifyContent: 'center' to center Gengar */}
+      <div className="battle-stage" style={{ justifyContent: 'center' }}>
+        
+        {/* PLAYER SPRITE REMOVED FROM HERE */}
+        
+        {/* ENEMY SIDE (Centered) */}
+        <div className="enemy-spot animate-float">
+           {/* Health Bar */}
+           <div className="health-bar-container">
+             <div className="health-label">POLLUTION MONSTER (GENGAR)</div>
+             <div className="health-bar-bg">
+                <div 
+                  className="health-bar-fill enemy"
+                  style={{width: `${enemyHealth}%`}}
+                ></div>
+             </div>
+           </div>
+           {/* Sprite */}
+           <img src={gengarSprite} alt="Enemy" className="sprite enemy-sprite filter-corruption" />
         </div>
-      )}
 
-      {/* Main Battle */}
-      {(gameState === 'battle' || gameState === 'victory') && (
-        <div className="battle-arena">
-          <div className="shutter top" ref={topRef}></div>
-          <div className="shutter bottom" ref={botRef}></div>
+      </div>
 
-          {/* Monster & Attacks */}
-          <div className="monster-stage">
-            <div className="monster-sprite">
-              {gameState === 'victory' ? (
-                <span style={{fontSize: '5rem'}}>✨🌞✨</span> 
-              ) : (
-                <img src={gengarGif} alt="Gengar" className="villain-img" />
-              )}
+      {/* --- UI & CONTROLS --- */}
+      <div className="battle-ui">
+         
+         {/* Player Health Status (Kept UI, just removed sprite) */}
+         <div className="player-status-box">
+            <div className="health-label">PLAYER STATUS</div>
+            <div className="health-bar-bg">
+               <div 
+                 className="health-bar-fill player"
+                 style={{width: `${playerHealth}%`}}
+               ></div>
             </div>
+            <div className="health-text">{playerHealth} / 100 HP</div>
+         </div>
 
-            {/* Attack VFX Layers */}
-            {attackAnim === 'thunder' && <img src={thunderGif} alt="Thunder" className="attack-vfx thunder" />}
-            {attackAnim === 'tail' && <img src={tailGif} alt="Tail" className="attack-vfx tail" />}
+         {/* Game Log */}
+         <div className="game-log terminal-text">
+           {gameLog.map((log, index) => (
+             <p key={index}>{log}</p>
+           ))}
+         </div>
 
-            {/* HP Bar */}
-            {gameState !== 'victory' && (
-              <div className="hp-container">
-                <div className="hp-fill" style={{ width: `${monsterHp}%` }}></div>
-              </div>
-            )}
-          </div>
-
-          {/* Battle UI / Dialog */}
-          <div className="battle-ui">
-            <div className="dialog-box">
-              <p>{battleLog}</p>
-            </div>
-            
-            <div className="action-box">
-              {gameState === 'battle' ? (
-                <>
-                  <button className="battle-btn" onClick={() => handleAttack(false)}>TAIL WHIP (Throw Trash)</button>
-                  <button className="battle-btn primary-atk" onClick={() => handleAttack(true)}>THUNDERSHOCK (Recycle)</button>
-                </>
-              ) : (
-                <button className="battle-btn" onClick={() => { 
-                  if(onWin) onWin(); 
-                  setGameState('idle'); 
-                }}>
-                  COLLECT REWARD
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+         {/* Action Menu */}
+         <div className="battle-menu">
+           <button 
+             className="battle-btn attack" 
+             onClick={() => handleAttack('quick')}
+             disabled={!isPlayerTurn || battleOver}
+           >
+             RECYCLE RUSH (Quick)
+           </button>
+           <button 
+             className="battle-btn heavy" 
+             onClick={() => handleAttack('heavy')}
+             disabled={!isPlayerTurn || battleOver}
+           >
+             SOLAR BEAM (Heavy)
+           </button>
+           <button 
+             className="battle-btn heal" 
+             onClick={() => handleAttack('heal')}
+             disabled={!isPlayerTurn || battleOver}
+           >
+             PURIFY (+Heal)
+           </button>
+         </div>
+      </div>
     </div>
   );
 };
