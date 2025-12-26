@@ -103,6 +103,8 @@ npm run dev
 The frontend will start at http://localhost:5173.
 
 ## 📂 Project Structure
+
+```text
 GreenTech/
 ├── greentech_backend/       # Django Backend
 │   ├── api/                 # API Views, Models, Serializers
