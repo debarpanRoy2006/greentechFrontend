@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import './Dashboard.css';
 
 // --- COMPONENT IMPORTS ---
@@ -10,29 +11,41 @@ import CarbonTracker from '../Features/CarbonTracker';
 import EnergyCalc from '../Features/EnergyCalc';
 import BattleArena from '../Features/BattleArena'; 
 import ImpactLogger from '../Features/ImpactLogger';
-import scanIcon from '../../assets/images/totodile-pokemon.gif'; 
 
 const Dashboard = () => {
   // --- STATE ---
   const [userStats, setUserStats] = useState({
-    username: "PLAYER ONE",
-    level: 5,
-    currentXP: 1250,
-    nextLevelXP: 2000,
-    badges: [
-      { id: 1, name: "Starter", icon: "🌱", unlocked: true, desc: "Initiated the EcoDex protocol.", date: "2025-10-12" },
-      { id: 2, name: "Recycler", icon: "♻️", unlocked: true, desc: "Successfully processed 5 recycling units.", date: "2025-10-15" },
-      { id: 3, name: "Solar", icon: "☀️", unlocked: true, desc: "Harnessed solar energy for the first time.", date: "2025-10-20" }, 
-      { id: 4, name: "Hydro", icon: "💧", unlocked: false, desc: "Mission: Save 100L of water to unlock.", date: "LOCKED" },
-      { id: 5, name: "Wind", icon: "🌬️", unlocked: false, desc: "Mission: Support wind energy infrastructure.", date: "LOCKED" },
-      { id: 6, name: "Bio", icon: "🍂", unlocked: false, desc: "Mission: Create a compost system.", date: "LOCKED" },
-    ]
+    username: "LOADING...",
+    level: 1,
+    currentXP: 0,
+    nextLevelXP: 500,
+    badges: [] 
   });
 
   const [notification, setNotification] = useState("");
   const [selectedBadge, setSelectedBadge] = useState(null); 
-  const [activeModal, setActiveModal] = useState(null); // 'MISSION', 'BATTLE', 'CARBON', 'ENERGY'
+  const [activeModal, setActiveModal] = useState(null); 
   const [threatLevel, setThreatLevel] = useState("SAFE");
+
+  // --- FETCH PROFILE FROM BACKEND ---
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/profile/');
+      setUserStats(response.data);
+    } catch (error) {
+      console.error("Failed to load profile", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  // --- REFRESH HANDLER ---
+  const handleStatsUpdate = () => {
+    fetchProfile(); 
+    setNotification("✨ LEADERBOARD UPDATED!");
+  };
 
   // --- THREAT TIMER ---
   useEffect(() => {
@@ -46,11 +59,25 @@ const Dashboard = () => {
   }, [threatLevel]);
 
   // --- HANDLERS ---
-  const handleBattleWin = () => {
-    setUserStats(prev => ({ ...prev, currentXP: prev.currentXP + 100 }));
-    setNotification("🏆 THREAT NEUTRALIZED! +100 XP");
-    setActiveModal(null); 
-    setThreatLevel("SAFE");
+  const handleBattleWin = async () => {
+    try {
+      // 1. Tell Backend to save the win
+      await axios.post('http://127.0.0.1:8000/api/log-impact/', {
+        action: 'battle_win'
+      });
+
+      // 2. Refresh data from server (So it persists)
+      fetchProfile();
+
+      // 3. UI Feedback
+      setNotification("🏆 THREAT NEUTRALIZED! +100 XP SAVED");
+      setActiveModal(null); 
+      setThreatLevel("SAFE");
+      
+    } catch (error) {
+      console.error("Failed to save battle win", error);
+      setNotification("⚠️ NETWORK ERROR: XP NOT SAVED");
+    }
   };
 
   const handleScan = () => setNotification("scanning sector... clear.");
@@ -75,7 +102,7 @@ const Dashboard = () => {
     );
   }
 
-  // 2. STANDARD POP-UPS (Mission, Carbon, Energy)
+  // 2. STANDARD POP-UPS
   const renderPopup = () => {
     if (!activeModal || activeModal === 'BATTLE') return null;
     
@@ -86,7 +113,10 @@ const Dashboard = () => {
         title = "MISSION CONTROL";
         content = (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="hud-panel"><h4 className="hud-subtitle">INPUT_STREAM</h4><ImpactLogger /></div>
+              <div className="hud-panel">
+                  <h4 className="hud-subtitle">INPUT_STREAM</h4>
+                  <ImpactLogger onSuccess={handleStatsUpdate} />
+              </div>
               <div className="hud-panel"><h4 className="hud-subtitle">DIAGNOSTICS</h4>
                 <div className="text-cyan-400 font-mono text-sm leading-loose">
                    SYSTEM CHECK... OK<br/>
@@ -155,7 +185,6 @@ const Dashboard = () => {
 
         {/* Right Panel */}
         <div className="right-col-stack">
-            {/* BADGE CASE COMPONENT */}
             <div className="panel badge-panel">
                <BadgeCase badges={userStats.badges} onBadgeClick={setSelectedBadge} />
             </div>
@@ -184,7 +213,7 @@ const Dashboard = () => {
       {renderPopup()}
       {notification && <div className="xp-popup animate-pop">{notification}</div>}
       
-      {/* --- BADGE DATABANK MODAL (INFORMATION ON CLICK) --- */}
+      {/* BADGE DETAILS */}
       {selectedBadge && (
          <div className="hud-modal-overlay" onClick={() => setSelectedBadge(null)}>
             <div className="hud-window cyan-theme" style={{maxWidth:'450px'}}>

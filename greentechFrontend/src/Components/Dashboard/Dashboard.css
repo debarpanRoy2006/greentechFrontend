@@ -544,3 +544,28 @@
     justify-content: center;
     align-items: center;
 }
+/* --- UPDATED: Fix for Squashed Text --- */
+
+.battle-text { 
+    text-align: left; 
+    font-family: 'Press Start 2P', cursive; 
+    color: white;
+    /* Use flexbox to force spacing between lines */
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Adds 8px space between every line */
+    line-height: 1.5; /* Increases general line height */
+}
+
+/* Optional: Make the "ENEMY DETECTED" text pop more without overlapping */
+.battle-text .text-lg {
+    font-size: 1.1rem; /* Adjust if still too big */
+    margin: 4px 0;     /* Extra breathing room top and bottom */
+}
+
+/* Ensure the red tag doesn't get squashed */
+.battle-text .text-xs.bg-red-500 {
+    padding: 4px 8px;
+    display: inline-block;
+    margin-bottom: 2px;
+}
