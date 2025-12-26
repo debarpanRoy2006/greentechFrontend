@@ -96,7 +96,8 @@ const Dashboard = () => {
            </button>
         </div>
         <div className="battle-screen-content">
-           <BattleArena onWin={handleBattleWin} />
+           {/* ✅ PASSING USER LEVEL TO ARENA FOR HP CALCULATION */}
+           <BattleArena onWin={handleBattleWin} userLevel={userStats.level} />
         </div>
       </div>
     );

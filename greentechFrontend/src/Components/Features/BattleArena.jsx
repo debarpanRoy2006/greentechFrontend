@@ -1,149 +1,271 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 import './BattleArena.css';
 
-// Only importing Gengar now
-import gengarSprite from '../../assets/images/Gengar.gif';
-// import pikachuSprite from '../../assets/images/pikachu.gif'; // REMOVED
+// --- ASSETS ---
+import battleMusicFile from '../../assets/sounds/battle-theme.mp3'; 
+import gengarGif from '../../assets/images/gengar.gif';
+import victoryImg from '../../assets/images/gengar-defeat.png'; 
 
-const BattleArena = ({ onWin }) => {
-  const [playerHealth, setPlayerHealth] = useState(100);
+// --- 🧠 BATTLE QUIZ DATA ---
+const BATTLE_QUESTIONS = [
+  {
+    id: 1,
+    text: "Which plastic is easiest to recycle?",
+    options: ["Polystyrene (6)", "PVC (3)", "PET (1)", "Other (7)"],
+    correctIndex: 2 // PET (1)
+  },
+  {
+    id: 2,
+    text: "You have eaten chips. What should you do?",
+    options: ["Use Dustbins", "Throw Trash on Road", "Do nothing", "Throw in River"],
+    correctIndex: 0 // Use Dustbins
+  },
+  {
+    id: 3,
+    text: "Which energy source is NOT renewable?",
+    options: ["Solar", "Natural Gas", "Wind", "Geothermal"],
+    correctIndex: 1 // Natural Gas
+  },
+  {
+    id: 4,
+    text: "A leaking tap wastes how much water/year?",
+    options: ["100 Liters", "500 Liters", "None", "> 10,000 Liters"],
+    correctIndex: 3 // > 10,000
+  }
+];
+
+// ✅ USER LEVEL PROP RECEIVED
+const BattleArena = ({ onWin, userLevel = 1 }) => {
+  
+  // --- CALCULATE PLAYER MAX HP ---
+  // Formula: Base 100 + (Level * 20).
+  const MAX_HP = 100 + (userLevel * 20);
+
+  // --- STATE ---
+  const [gameState, setGameState] = useState('loading'); // loading, battle, victory, gameover
+  const [loadProgress, setLoadProgress] = useState(0);
+  
+  // Stats
+  const [playerHealth, setPlayerHealth] = useState(MAX_HP); // Initial HP based on Level
   const [enemyHealth, setEnemyHealth] = useState(100);
-  const [gameLog, setGameLog] = useState(["⚠️ A wild POLLUTION MONSTER appeared!"]);
-  const [isPlayerTurn, setIsPlayerTurn] = useState(true);
-  const [battleOver, setBattleOver] = useState(false);
+  const [currentRound, setCurrentRound] = useState(0); // Tracks which question (0-3)
+  
+  // Visuals
+  const [battleLog, setBattleLog] = useState("A wild POLLUTION MONSTER appeared!");
+  const [isFainting, setIsFainting] = useState(false);
+  const [isShake, setIsShake] = useState(false); 
 
-  // Simple AI turn
+  // Refs
+  const topRef = useRef(null);
+  const botRef = useRef(null);
+  const battleAudioRef = useRef(new Audio(battleMusicFile));
+
+  // --- 1. INTRO SEQUENCE ---
   useEffect(() => {
-    if (!isPlayerTurn && !battleOver && enemyHealth > 0) {
-      setTimeout(() => {
-        const damage = Math.floor(Math.random() * 20) + 5;
-        setPlayerHealth(prev => Math.max(0, prev - damage));
-        addLog(`🔻 Enemy used TOXIC SLUDGE! You took ${damage} DMG.`);
-        setIsPlayerTurn(true);
-      }, 1500);
-    }
-  }, [isPlayerTurn, battleOver, enemyHealth]);
+    const interval = setInterval(() => {
+      setLoadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => setGameState('battle'), 500); 
+          return 100;
+        }
+        return prev + 5; 
+      });
+    }, 40);
+  }, []);
 
-  // Check win/loss condition
+  // --- 2. GSAP SHUTTERS & MUSIC ---
   useEffect(() => {
-    if (enemyHealth <= 0 && !battleOver) {
-       setBattleOver(true);
-       addLog("🏆 Enemy defeated! The air is clearing...");
-       setTimeout(() => {
-          if (onWin) onWin();
-       }, 2000);
-    } else if (playerHealth <= 0 && !battleOver) {
-       setBattleOver(true);
-       addLog("💀 You were overwhelmed by pollution...");
+    if (gameState === 'battle') {
+      const tl = gsap.timeline();
+      tl.set([topRef.current, botRef.current], { y: 0 })
+        .to(topRef.current, { y: '-100%', duration: 1.5, ease: 'power3.inOut', delay: 0.2 })
+        .to(botRef.current, { y: '100%', duration: 1.5, ease: 'power3.inOut' }, "<");
+
+      const audio = battleAudioRef.current;
+      audio.currentTime = 0; 
+      audio.volume = 0.3;    
+      audio.loop = true;     
+      audio.play().catch(e => console.log("Audio autoplay blocked"));
+    } else {
+      battleAudioRef.current.pause();
     }
-  }, [enemyHealth, playerHealth, battleOver, onWin]);
+    return () => battleAudioRef.current.pause();
+  }, [gameState]);
 
-  const addLog = (msg) => {
-    setGameLog(prev => [msg, ...prev].slice(0, 5));
-  };
+  // --- 3. HANDLE ANSWER SELECTION ---
+  const handleAnswer = (selectedIndex) => {
+    if (gameState !== 'battle' || isFainting) return;
 
-  const handleAttack = (type) => {
-    if (!isPlayerTurn || battleOver) return;
+    const currentQ = BATTLE_QUESTIONS[currentRound];
+    const isCorrect = selectedIndex === currentQ.correctIndex;
 
-    let damage = 0;
-    let moveName = "";
+    if (isCorrect) {
+      // --- CORRECT ANSWER ---
+      // 4 Rounds to kill Gengar (100 HP / 4 = 25 Damage)
+      const damage = 25; 
+      setEnemyHealth(prev => Math.max(0, prev - damage));
+      setBattleLog("Correct! Used KNOWLEDGE BEAM! It's Super Effective!");
 
-    switch(type) {
-      case 'quick':
-        damage = Math.floor(Math.random() * 15) + 10;
-        moveName = "RECYCLE RUSH";
-        break;
-      case 'heavy':
-        damage = Math.floor(Math.random() * 30) + 5;
-        moveName = "SOLAR BEAM";
-        break;
-      case 'heal':
-        const healAmount = 30;
-        setPlayerHealth(prev => Math.min(100, prev + healAmount));
-        addLog(`💚 Used PURIFY! Healed +${healAmount} HP.`);
-        setIsPlayerTurn(false);
-        return;
-      default: break;
-    }
+      // Check if this was the last round
+      if (currentRound >= BATTLE_QUESTIONS.length - 1) {
+         handleWin();
+      } else {
+         // Move to next round after delay
+         setTimeout(() => {
+             setCurrentRound(prev => prev + 1);
+             setBattleLog(`Next Question: ${BATTLE_QUESTIONS[currentRound + 1].text}`);
+         }, 1500);
+      }
 
-    setEnemyHealth(prev => Math.max(0, prev - damage));
-    addLog(`⚔️ Used ${moveName}! Dealt ${damage} DMG.`);
-    setIsPlayerTurn(false);
-  };
-
-  return (
-    <div className="battle-container">
+    } else {
+      // --- WRONG ANSWER ---
+      const damage = 30; // Player takes damage
+      setPlayerHealth(prev => Math.max(0, prev - damage));
+      setBattleLog("Wrong! Gengar used TOXIC SLUDGE!");
       
-      {/* --- THE BATTLE STAGE --- */}
-      {/* Added justifyContent: 'center' to center Gengar */}
-      <div className="battle-stage" style={{ justifyContent: 'center' }}>
-        
-        {/* PLAYER SPRITE REMOVED FROM HERE */}
-        
-        {/* ENEMY SIDE (Centered) */}
-        <div className="enemy-spot animate-float">
-           {/* Health Bar */}
-           <div className="health-bar-container">
-             <div className="health-label">POLLUTION MONSTER (GENGAR)</div>
-             <div className="health-bar-bg">
-                <div 
-                  className="health-bar-fill enemy"
-                  style={{width: `${enemyHealth}%`}}
-                ></div>
-             </div>
-           </div>
-           {/* Sprite */}
-           <img src={gengarSprite} alt="Enemy" className="sprite enemy-sprite filter-corruption" />
-        </div>
+      // Shake Effect
+      setIsShake(true);
+      setTimeout(() => setIsShake(false), 500);
 
+      // Check Game Over
+      if (playerHealth - damage <= 0) {
+         setBattleLog("💀 You fainted! Study harder next time.");
+         setGameState('gameover');
+      }
+    }
+  };
+
+  const handleWin = () => {
+    setTimeout(() => {
+      setIsFainting(true); 
+      setBattleLog("Gengar fainted! The pollution is clearing!");
+      
+      setTimeout(() => {
+         setGameState('victory');
+         if(onWin) onWin(); 
+      }, 2500);
+    }, 1000);
+  };
+
+  // --- RENDER LOADING ---
+  if (gameState === 'loading') {
+    return (
+      <div className="battle-loading">
+        <h1>LOADING ENCOUNTER...</h1>
+        <div className="loader-bar">
+           <div className="loader-fill" style={{ width: `${loadProgress}%` }}></div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- RENDER BATTLE ---
+  return (
+    <div className={`battle-arena ${isShake ? 'shake-screen' : ''}`}>
+      <div className="shutter top" ref={topRef}></div>
+      <div className="shutter bottom" ref={botRef}></div>
+
+      {/* ENEMY HUD */}
+      <div className="battle-hud enemy-hud">
+         <div className="hud-info">
+            <span className="hud-name">GENGAR</span>
+            <span className="hud-lvl">Lv.50</span>
+         </div>
+         <div className="hp-bar-container">
+            <div className="hp-label">HP</div>
+            <div className="hp-track">
+                <div 
+                  className={`hp-fill ${enemyHealth < 30 ? 'critical' : ''}`} 
+                  style={{ width: `${enemyHealth}%` }}
+                ></div>
+            </div>
+         </div>
       </div>
 
-      {/* --- UI & CONTROLS --- */}
-      <div className="battle-ui">
-         
-         {/* Player Health Status (Kept UI, just removed sprite) */}
-         <div className="player-status-box">
-            <div className="health-label">PLAYER STATUS</div>
-            <div className="health-bar-bg">
-               <div 
-                 className="health-bar-fill player"
-                 style={{width: `${playerHealth}%`}}
-               ></div>
+      {/* MONSTER STAGE */}
+      <div className="monster-stage">
+        {gameState !== 'victory' && (
+           <img 
+             src={gengarGif} 
+             alt="Gengar" 
+             className={`villain-img ${isFainting ? 'fainting-anim' : ''}`} 
+           />
+        )}
+      </div>
+
+      {/* PLAYER HUD */}
+      <div className="battle-hud player-hud" style={{top: 'auto', bottom: '200px', left: 'auto', right: '40px'}}>
+         <div className="hud-info">
+            <span className="hud-name">PLAYER</span>
+            {/* Show Real User Level */}
+            <span className="hud-lvl">Lv.{userLevel}</span>
+         </div>
+         <div className="hp-bar-container">
+            <div className="hp-label">HP</div>
+            <div className="hp-track">
+                <div 
+                  className={`hp-fill ${playerHealth < (MAX_HP * 0.3) ? 'critical' : ''}`} 
+                  // Calculate Width based on Max HP
+                  style={{ width: `${(playerHealth / MAX_HP) * 100}%`, background: '#3b82f6' }}
+                ></div>
             </div>
-            <div className="health-text">{playerHealth} / 100 HP</div>
          </div>
+         {/* Show Real Stats */}
+         <div style={{textAlign:'right', fontSize:'0.5rem', marginTop:'5px'}}>
+            {playerHealth}/{MAX_HP}
+         </div>
+      </div>
 
-         {/* Game Log */}
-         <div className="game-log terminal-text">
-           {gameLog.map((log, index) => (
-             <p key={index}>{log}</p>
-           ))}
-         </div>
-
-         {/* Action Menu */}
-         <div className="battle-menu">
-           <button 
-             className="battle-btn attack" 
-             onClick={() => handleAttack('quick')}
-             disabled={!isPlayerTurn || battleOver}
-           >
-             RECYCLE RUSH (Quick)
-           </button>
-           <button 
-             className="battle-btn heavy" 
-             onClick={() => handleAttack('heavy')}
-             disabled={!isPlayerTurn || battleOver}
-           >
-             SOLAR BEAM (Heavy)
-           </button>
-           <button 
-             className="battle-btn heal" 
-             onClick={() => handleAttack('heal')}
-             disabled={!isPlayerTurn || battleOver}
-           >
-             PURIFY (+Heal)
-           </button>
-         </div>
+      {/* BATTLE UI */}
+      <div className="battle-ui">
+        {gameState === 'victory' ? (
+          // --- VICTORY SCREEN ---
+          <div className="victory-container" style={{width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
+             <img 
+               src={victoryImg} 
+               alt="Defeated" 
+               style={{ height:'140px', border:'4px solid #fff', borderRadius:'10px' }} 
+             />
+             <div style={{marginLeft:'20px', textAlign:'left'}}>
+                <h3 style={{color:'#4caf50', marginBottom:'10px'}}>VICTORY!</h3>
+                <p style={{fontSize:'0.6rem'}}>Knowledge saves the planet.</p>
+                <p style={{fontSize:'0.6rem', color:'#ffcb05'}}>+100 XP Gained.</p>
+             </div>
+          </div>
+        ) : gameState === 'gameover' ? (
+           // --- GAME OVER SCREEN ---
+           <div style={{width:'100%', textAlign:'center', color:'red'}}>
+              <h2>GAME OVER</h2>
+              <p>Try refreshing to fight again.</p>
+           </div>
+        ) : (
+          // --- QUIZ UI ---
+          <>
+            <div className="dialog-box">
+              <p className="typing-effect">
+                 {/* Show Question or Log */}
+                 {battleLog.includes("wild") || battleLog.includes("Correct") || battleLog.includes("Wrong") 
+                   ? battleLog 
+                   : `Q${currentRound + 1}: ${BATTLE_QUESTIONS[currentRound].text}`}
+              </p>
+            </div>
+            
+            <div className="action-box">
+              {/* MAP 4 OPTIONS BUTTONS */}
+              {BATTLE_QUESTIONS[currentRound].options.map((option, index) => (
+                <button 
+                  key={index}
+                  className="battle-btn" 
+                  onClick={() => handleAnswer(index)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
