@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* 1. The Overlay (Dim the background) */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.9); /* Darker backdrop */
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 2. The Modal Box (Dark Cyber Style) */
+.game-cartridge-modal {
+  background: #0f172a; /* Dark Slate Background */
+  width: 90%;
+  max-width: 400px;
+  border: 2px solid #22d3ee; /* Neon Cyan Border */
+  padding: 30px 20px;
+  position: relative;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.4), inset 0 0 20px rgba(0,0,0,0.5); /* Glow */
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+  color: #22d3ee; /* Cyan Text */
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Header & Sprite */
+.modal-header { margin-bottom: 20px; }
+.pixel-sprite { font-size: 3rem; margin-bottom: 10px; filter: drop-shadow(0 0 5px #22d3ee); }
+.bouncing { animation: bounce 1.5s infinite; }
+
+.pixel-title {
+  font-size: 0.8rem;
+  color: #a5f3fc;
+  margin-bottom: 20px;
+  text-shadow: 0 0 5px #22d3ee;
+}
+
+/* 3. Inputs (Dark Mode) */
+.pixel-input-group { margin-bottom: 20px; text-align: left; }
+
+.pixel-input-group label {
+  display: block; 
+  font-size: 0.6rem; 
+  color: #22d3ee; 
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.pixel-input-group input {
+  width: 100%; 
+  padding: 12px;
+  font-family: 'Press Start 2P', cursive; 
+  font-size: 0.7rem;
+  color: #fff; /* White Text */
+  background: #1e293b; /* Darker Input BG */
+  border: 1px solid #334155; 
+  outline: none; 
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.pixel-input-group input:focus { 
+  border-color: #22d3ee;
+  background: #0f172a;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+}
+
+/* 4. The Main Button */
+.start-btn {
+  width: 100%; 
+  padding: 15px;
+  background: #22d3ee; /* Cyan Button */
+  border: none;
+  font-family: 'Press Start 2P', cursive; 
+  font-size: 0.8rem;
+  color: #0f172a; /* Dark Text */
+  font-weight: bold;
+  cursor: pointer; 
+  margin-top: 10px;
+  box-shadow: 0 4px 0px #0891b2; /* Darker Cyan Shadow */
+  transition: transform 0.1s;
+}
+
+.start-btn:active { 
+  transform: translateY(4px); 
+  box-shadow: none; 
+}
+
+.start-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Close & Cheat buttons */
+.close-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: none; border: none; font-size: 1.2rem; cursor: pointer;
+  color: #ef4444; /* Red Close Button */
+  text-shadow: 0 0 5px red;
+}
+
+.cheat-code {
+  margin-top: 20px; 
+  font-size: 0.6rem; 
+  color: #64748b; 
+  cursor: pointer; 
+  text-decoration: none;
+  opacity: 0.6;
+}
+.cheat-code:hover { opacity: 1; color: #fff; }
+
+/* Animations */
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes slideUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
