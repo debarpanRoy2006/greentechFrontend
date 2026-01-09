@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css'; 
+import '../Login/Login.css'; // Ensure this path is correct for your folder structure
 
-const Register = ({ isOpen, onClose, onRegisterSuccess, switchToLogin }) => {
+// 1. UPDATED PROPS: Changed 'onRegisterSuccess' to 'onLogin' to match App.jsx
+const Register = ({ isOpen, onClose, onLogin, switchToLogin }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,21 +18,39 @@ const Register = ({ isOpen, onClose, onRegisterSuccess, switchToLogin }) => {
     setError('');
 
     try {
-      await axios.post('http://127.0.0.1:8000/api/register/', {
+      // 1. Send Data (Backend returns 201 Created)
+      const response = await axios.post('http://127.0.0.1:8000/api/register/', {
         username: username,
         email: email,
         password: password
       });
       
-      // Auto-login on success
-      onRegisterSuccess(username);
+      // 2. SUCCESS!
+      console.log("Registration Response:", response.data);
+      
       alert("Registration Successful! Welcome to the Corps.");
       
+      // 3. CALL THE CORRECT FUNCTION
+      // We check if onLogin exists before calling it to prevent crashes
+      if (onLogin) {
+          onLogin(username);
+      }
+      
+      onClose();
+      
     } catch (err) {
-      console.error(err);
-      if(err.response && err.response.data && err.response.data.username) {
-         setError("Username already taken.");
+      console.error("Registration Error:", err);
+      
+      // 3. HANDLE ERRORS
+      if(err.response && err.response.data) {
+         // This handles backend errors (like "Username taken")
+         const errorMsg = typeof err.response.data === 'object' 
+            ? Object.values(err.response.data).flat().join(', ')
+            : JSON.stringify(err.response.data);
+            
+         setError(errorMsg || "Registration Failed.");
       } else {
+         // This handles Network errors OR code crashes (like the prop mismatch)
          setError("Registration Failed. Check connection.");
       }
     } finally {
